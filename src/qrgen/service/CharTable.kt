@@ -1,10 +1,8 @@
 package qrgen.service
 
-object CharTable {
+class CharTable {
 
-    const val letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:"
+    private val letters = ('0'..'9').plus('A'..'Z').plus(" \$%*+-./:")
 
-    const val numbers = "0123456789"
-
-    fun getCharCode(char: Char) : Byte = if(numbers.contains(char)) char.toByte() else (letters.indexOf(char) + 10).toByte()
+    fun getCharCode(char: Char) = letters.indexOf(char)
 }

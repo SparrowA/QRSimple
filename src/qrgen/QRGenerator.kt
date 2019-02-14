@@ -1,17 +1,59 @@
 package qrgen
 
+import qrgen.enumeration.EncodingType
+import qrgen.enumeration.ErrorCorrection
+import qrgen.service.CharTable
+
 object QRGenerator {
 
     /**
      * @param data Data string for encoding
      * @param errLevel Level of error. Can be  L = 7%, M = 15%, Q = 25%, H = 30%
-     * @param type Type of encoding. Number - 1, Alphanumber - 2, Binary - 4
+     * @param type Type of encoding. Numeric - 1, Alphanumeric - 2, Binary - 4
      */
-    fun getQRCode(data : String, errLevel : Char = 'H', type : Byte = 2) {
+    fun getQRCode(data : String, errLevel : ErrorCorrection = ErrorCorrection.High, type : EncodingType = EncodingType.Alphanumeric) {
         val encodeByte = ArrayList<Byte>()
 
-        if(type == 4.toByte()) {
+        //encodeByte.addAll(getEncodingValue(data, type))
+    }
 
+    /**
+     * Encoding string to array of byte using specific table
+     */
+    private fun getEncodingValue(data : String, type: EncodingType) =
+        when(type) {
+            EncodingType.Binary -> data.flatMap { getBitArrayByNumber(it.toInt(), 8) }
+            EncodingType.Alphanumeric -> data.chunked(2).flatMap {
+                val charTable = CharTable()
+                val num = when(it.length) {
+                    2 -> charTable.getCharCode(it[0]) * 45 + charTable.getCharCode(it[1])
+                    1 -> charTable.getCharCode(it[0])
+                    else -> 0
+                }
+                getBitArrayByNumber(num.toString(), 11)
+            }
+            EncodingType.Numeric -> data.chunked(3).flatMap { getBitArrayByNumber(it) }
         }
+
+    private fun getBitArrayByNumber(number : Int, size : Int) = QRGenerator.getBitArrayByNumber(number.toString(), size)
+
+    private fun getBitArrayByNumber(
+        number : String,
+        size : Int = when(number.length) {
+            3 -> 10
+            2 -> 7
+            1 -> 4
+            else -> 0
+        }
+    ) : List<Boolean> {
+        val result = ArrayList<Boolean>(size)
+
+        var buff = number.toInt()
+        for(i in result.size downTo 0) {
+            result[i] = buff % 2 == 1
+            buff /= 2
+        }
+
+        return result
     }
 }
