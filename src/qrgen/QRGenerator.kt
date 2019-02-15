@@ -30,22 +30,26 @@ object QRGenerator {
                     1 -> charTable.getCharCode(it[0])
                     else -> 0
                 }
-                getBitArrayByNumber(num.toString(), 11)
+                getBitArrayByNumber(num, 11)
             }
-            EncodingType.Numeric -> data.chunked(3).flatMap { getBitArrayByNumber(it) }
+            EncodingType.Numeric -> data.chunked(3).associate { Pair(it.toInt(), it.length) } .flatMap {
+                getBitArrayByNumber(it.key,
+                    when(it.value) {
+                        3 -> 10
+                        2 -> 7
+                        1 -> 4
+                        else -> 0
+                    }
+                )
+            }
         }
 
-    private fun getBitArrayByNumber(number : Int, size : Int) = QRGenerator.getBitArrayByNumber(number.toString(), size)
-
-    private fun getBitArrayByNumber(
-        number : String,
-        size : Int = when(number.length) {
-            3 -> 10
-            2 -> 7
-            1 -> 4
-            else -> 0
-        }
-    ) : List<Boolean> {
+    /**
+     * Transform Int to its bit array
+     * @param number Int to transform
+     * @param size Count of bit in array. If count fo bit less then size, it will be padding leading 0
+     */
+    private fun getBitArrayByNumber(number : Int, size : Int ) : List<Boolean> {
         val result = ArrayList<Boolean>(size)
 
         var buff = number.toInt()
