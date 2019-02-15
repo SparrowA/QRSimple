@@ -3,6 +3,7 @@ package qrgen
 import qrgen.enumeration.EncodingType
 import qrgen.enumeration.ErrorCorrection
 import qrgen.service.CharTable
+import qrgen.service.QRLevel
 
 object QRGenerator {
 
@@ -52,7 +53,7 @@ object QRGenerator {
     private fun getBitArrayByNumber(number : Int, size : Int ) : List<Boolean> {
         val result = ArrayList<Boolean>(size)
 
-        var buff = number.toInt()
+        var buff = number
         for(i in result.size downTo 0) {
             result[i] = buff % 2 == 1
             buff /= 2
