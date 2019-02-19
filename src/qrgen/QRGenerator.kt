@@ -3,7 +3,7 @@ package qrgen
 import qrgen.enumeration.EncodingType
 import qrgen.enumeration.ErrorCorrection
 import qrgen.service.CharTable
-import qrgen.service.QRLevel
+import qrgen.service.Settings
 
 object QRGenerator {
 
@@ -50,8 +50,8 @@ object QRGenerator {
      * @param number Int to transform
      * @param size Count of bit in array. If count fo bit less then size, it will be padding leading 0
      */
-    private fun getBitArrayByNumber(number : Int, size : Int ) : List<Boolean> {
-        val result = ArrayList<Boolean>(size)
+    private fun getBitArrayByNumber(number : Int, size : Int ) : BitBlock {
+        val result = BitBlock(size.toByte())
 
         var buff = number
         for(i in result.size downTo 0) {
