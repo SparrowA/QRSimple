@@ -25,6 +25,8 @@ class Settings(errLevel : ErrorCorrection, type : EncodingType, countEncodBit : 
      */
     val typeCode : BitBlock = BitBlock(4).fillBlock(type.value.toInt())
 
+    fun getTechBlock() : List<BitBlock> = listOf(typeCode, sizeBits)
+
     init {
         val levelOfQR = QRLevel(errLevel)
         qrLevel = levelOfQR.getLevelByCapacity(countEncodBit + 3)

@@ -23,8 +23,8 @@ object QRGenerator {
      */
     private fun getEncodingValue(data : String, type: EncodingType) =
         when(type) {
-            EncodingType.Binary -> data.flatMap { getBitArrayByNumber(it.toInt(), 8) }
-            EncodingType.Alphanumeric -> data.chunked(2).flatMap {
+            EncodingType.Binary -> data.map { getBitArrayByNumber(it.toInt(), 8) }
+            EncodingType.Alphanumeric -> data.chunked(2).map {
                 val charTable = CharTable()
                 val num = when(it.length) {
                     2 -> charTable.getCharCode(it[0]) * 45 + charTable.getCharCode(it[1])
@@ -33,7 +33,7 @@ object QRGenerator {
                 }
                 getBitArrayByNumber(num, 11)
             }
-            EncodingType.Numeric -> data.chunked(3).associate { Pair(it.toInt(), it.length) } .flatMap {
+            EncodingType.Numeric -> data.chunked(3).associate { Pair(it.toInt(), it.length) } .map {
                 getBitArrayByNumber(it.key,
                     when(it.value) {
                         3 -> 10
