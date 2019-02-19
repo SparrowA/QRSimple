@@ -1,6 +1,6 @@
 package qrgen.service
 
-import qrgen.BitBlock
+import qrgen.Model.BitBlock
 import qrgen.enumeration.EncodingType
 import qrgen.enumeration.ErrorCorrection
 
@@ -23,16 +23,21 @@ class Settings(errLevel : ErrorCorrection, type : EncodingType, countEncodBit : 
     /**
      * Type of data to encoding in QR code
      */
-    val typeCode : BitBlock = BitBlock(4).fillBlock(type.value.toInt())
+    val typeCode : BitBlock = BitBlock(4).fillBlockByNum(type.value.toInt())
 
-    fun getTechBlock() : List<BitBlock> = listOf(typeCode, sizeBits)
+    fun getTechBlock() : List<Boolean> {
+        val result = arrayListOf<Boolean>()
+        result.addAll(typeCode.toBooleanList())
+        result.addAll(sizeBits.toBooleanList())
+        return result
+    }
 
     init {
         val levelOfQR = QRLevel(errLevel)
         qrLevel = levelOfQR.getLevelByCapacity(countEncodBit + 3)
 
         val lengthOfSize = type.getLengthOfSize(qrLevel)
-        sizeBits = BitBlock(lengthOfSize).fillBlock(countEncodBit)
+        sizeBits = BitBlock(lengthOfSize).fillBlockByNum(countEncodBit)
 
         //TODO: Need write code to correct qr level depend on tech bit
     }

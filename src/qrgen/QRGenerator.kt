@@ -1,5 +1,6 @@
 package qrgen
 
+import qrgen.Model.BitBlock
 import qrgen.enumeration.EncodingType
 import qrgen.enumeration.ErrorCorrection
 import qrgen.service.CharTable
@@ -23,25 +24,25 @@ object QRGenerator {
      */
     private fun getEncodingValue(data : String, type: EncodingType) =
         when(type) {
-            EncodingType.Binary -> data.map { getBitArrayByNumber(it.toInt(), 8) }
-            EncodingType.Alphanumeric -> data.chunked(2).map {
+            EncodingType.Binary -> data.flatMap { BitBlock(8).fillBlockByNum(it.toInt()).toBooleanList() }
+            EncodingType.Alphanumeric -> data.chunked(2).flatMap {
                 val charTable = CharTable()
                 val num = when(it.length) {
                     2 -> charTable.getCharCode(it[0]) * 45 + charTable.getCharCode(it[1])
                     1 -> charTable.getCharCode(it[0])
                     else -> 0
                 }
-                getBitArrayByNumber(num, 11)
+                BitBlock(11).fillBlockByNum(num).toBooleanList()
             }
-            EncodingType.Numeric -> data.chunked(3).associate { Pair(it.toInt(), it.length) } .map {
-                getBitArrayByNumber(it.key,
-                    when(it.value) {
+            EncodingType.Numeric -> data.chunked(3).associate { Pair(it.toInt(), it.length) } .flatMap {
+                BitBlock(
+                    when (it.value) {
                         3 -> 10
                         2 -> 7
                         1 -> 4
                         else -> 0
                     }
-                )
+                ).fillBlockByNum(it.key).toBooleanList()
             }
         }
 
@@ -61,4 +62,6 @@ object QRGenerator {
 
         return result
     }
+
+    private fun getZeroBitBlock(size : Byte) = BitBlock(size).fillBlockByZero().toBooleanList()
 }

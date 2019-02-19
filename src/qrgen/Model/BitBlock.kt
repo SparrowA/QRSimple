@@ -1,9 +1,25 @@
-package qrgen
+package qrgen.Model
 
 import qrgen.service.NegativeArrayIndex
 import java.lang.IndexOutOfBoundsException
 
 class BitBlock(val size : Byte) : Iterable<Boolean> {
+
+    companion object {
+        //11101100
+        private val fillerOne = BitBlock(8.toByte()).fillBlockByNum(236)
+        //00010001
+        private val fillerTwo = BitBlock(8.toByte()).fillBlockByNum(17)
+
+        /**
+         * Return list of filler byte
+         */
+        fun getFillers(byteCount : Short) : List<BitBlock> =
+            (1..byteCount).map {
+                if(it % 2 != 0) fillerOne
+                else fillerTwo
+            }
+    }
 
     private val bits = Array(size.toInt()) { false }
 
@@ -34,7 +50,7 @@ class BitBlock(val size : Byte) : Iterable<Boolean> {
      * Transform Int to its bit array
      * @param num Int to transform
      */
-    fun fillBlock(num : Int) : BitBlock {
+    fun fillBlockByNum(num : Int) : BitBlock {
         var buff = num
         for(i in bits.size downTo 0) {
             bits[i] = buff % 2 == 1
@@ -42,4 +58,16 @@ class BitBlock(val size : Byte) : Iterable<Boolean> {
         }
         return this
     }
+
+    /**
+     *
+     */
+    fun fillBlockByZero() : BitBlock {
+        for(i in 0..bits.size) {
+            bits[i] = false
+        }
+        return this
+    }
+
+    fun toBooleanList() = bits.toList()
 }
