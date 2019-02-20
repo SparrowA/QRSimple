@@ -12,25 +12,22 @@ class Settings(errLevel : ErrorCorrection, type : EncodingType, countEncodBit : 
     /**
      * Technical field with count of bits
      */
-    val sizeBits : BitBlock
+    private val sizeBits : BitBlock
 
     /**
      * Level of QR code
      */
-    var qrLevel : Byte
-        private set
+    private var qrLevel : Byte
 
     /**
      * Type of data to encoding in QR code
      */
-    val typeCode : BitBlock = BitBlock(4).fillBlockByNum(type.value.toInt())
+    private val typeCode : BitBlock = BitBlock(4).fillBlockByNum(type.value.toInt())
 
-    fun getTechBlock() : List<Boolean> {
-        val result = arrayListOf<Boolean>()
-        result.addAll(typeCode.toBooleanList())
-        result.addAll(sizeBits.toBooleanList())
-        return result
-    }
+    /**
+     * Capacity of qr code level
+     */
+    val levelSize : Short
 
     init {
         val levelOfQR = QRLevel(errLevel)
@@ -39,6 +36,16 @@ class Settings(errLevel : ErrorCorrection, type : EncodingType, countEncodBit : 
         val lengthOfSize = type.getLengthOfSize(qrLevel)
         sizeBits = BitBlock(lengthOfSize).fillBlockByNum(countEncodBit)
 
+        levelSize = levelOfQR.getCapacityByLevel(qrLevel)
+
         //TODO: Need write code to correct qr level depend on tech bit
     }
+
+    fun getTechBlock() : List<Boolean> {
+        val result = arrayListOf<Boolean>()
+        result.addAll(typeCode.toBooleanList())
+        result.addAll(sizeBits.toBooleanList())
+        return result
+    }
+
 }

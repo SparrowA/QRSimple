@@ -14,11 +14,11 @@ class BitBlock(val size : Byte) : Iterable<Boolean> {
         /**
          * Return list of filler byte
          */
-        fun getFillers(byteCount : Short) : List<BitBlock> =
+        fun getFillers(byteCount : Short) : List<Boolean> =
             (1..byteCount).map {
                 if(it % 2 != 0) fillerOne
                 else fillerTwo
-            }
+            }.flatMap { it.toBooleanList() }
     }
 
     private val bits = Array(size.toInt()) { false }

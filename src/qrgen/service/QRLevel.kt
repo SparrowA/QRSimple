@@ -49,5 +49,5 @@ class QRLevel(errorCorrection: ErrorCorrection) {
     /**
      * Return capacity for qr level
      */
-    fun getCapacityByLevel(level : Int) = if(level - 1 < 0 || level - 1 >= listOfCapacity.size) throw IndexOutOfBoundsException("Level must be between 1 and 40") else listOfCapacity[level - 1]
+    fun getCapacityByLevel(level : Byte) = if(level - 1 < 0 || level - 1 >= listOfCapacity.size) throw IndexOutOfBoundsException("Level must be between 1 and 40") else listOfCapacity[level - 1]
 }
