@@ -29,6 +29,11 @@ class Settings(errLevel : ErrorCorrection, type : EncodingType, countEncodBit : 
      */
     val levelSize : Short
 
+    /**
+     * Count of block n QR code. It's defined by level
+     */
+    val countBlock : Byte
+
     init {
         val levelOfQR = QRLevel(errLevel)
         qrLevel = levelOfQR.getLevelByCapacity(countEncodBit + 3)
@@ -36,7 +41,9 @@ class Settings(errLevel : ErrorCorrection, type : EncodingType, countEncodBit : 
         val lengthOfSize = type.getLengthOfSize(qrLevel)
         sizeBits = BitBlock(lengthOfSize).fillBlockByNum(countEncodBit)
 
-        levelSize = levelOfQR.getCapacityByLevel(qrLevel)
+        countBlock = levelOfQR.getCountBlockByLevel(qrLevel.toInt())
+
+        levelSize = levelOfQR.getCapacityByLevel(qrLevel.toInt())
 
         //TODO: Need write code to correct qr level depend on tech bit
     }

@@ -19,6 +19,31 @@ object QRGenerator {
         //encodeByte.addAll(getEncodingValue(data, type))
     }
 
+    fun pow(base : Int, exp : Int) : Int = if(exp == 0) 1 else base * pow(base, exp - 1)
+
+    /**
+     * Calc count of byte in each blocks
+     */
+    private fun getBlocksSize(countOfByte : Int, countOfBlock : Int) : Array<Int> {
+        val minByte = countOfByte / countOfBlock
+        val result = Array(countOfBlock) {minByte}
+
+        var remainder = countOfByte - minByte * countOfBlock
+
+        if(remainder > 0) {
+            (result.size - 1..0).forEach label@{
+                result[it] += 1
+                remainder--
+
+                if(remainder == 0) {
+                    return@label
+                }
+            }
+        }
+
+        return result
+    }
+
     /**
      * Encoding string to array of byte using specific table
      */
@@ -45,23 +70,6 @@ object QRGenerator {
                 ).fillBlockByNum(it.key).toBooleanList()
             }
         }
-
-    /**
-     * Transform Int to its bit array
-     * @param number Int to transform
-     * @param size Count of bit in array. If count fo bit less then size, it will be padding leading 0
-     */
-    private fun getBitArrayByNumber(number : Int, size : Int ) : BitBlock {
-        val result = BitBlock(size.toByte())
-
-        var buff = number
-        for(i in result.size downTo 0) {
-            result[i] = buff % 2 == 1
-            buff /= 2
-        }
-
-        return result
-    }
 
     private fun getZeroBitBlock(size : Byte) = BitBlock(size).fillBlockByZero().toBooleanList()
 }
